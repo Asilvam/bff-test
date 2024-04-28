@@ -6,6 +6,7 @@ import { LoggerMiddleware } from '../shared/logger-middleware/logger.middleware'
 import { Configuration } from '../shared/env.enum';
 import * as process from 'node:process';
 import { GenericModule } from './generic/generic.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 @Module({
   imports: [
@@ -21,9 +22,11 @@ import { GenericModule } from './generic/generic.module';
 })
 export class AppModule {
   static port: number | string;
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
+
   constructor(private readonly configService: ConfigService) {
     const logger = new Logger(AppModule.name);
     AppModule.port = this.configService.get(Configuration.PORT);
@@ -35,5 +38,16 @@ export class AppModule {
       AppModule.name,
     );
     logger.log(`CUSTOM VARS: ${JSON.stringify(configVar())}`);
+  }
+
+  configureSwagger(app) {
+    const options = new DocumentBuilder()
+      .setTitle('Your API Title')
+      .setDescription('Your API description')
+      .setVersion('1.0')
+      .addTag('your-tag')
+      .build();
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('api', app, document);
   }
 }
