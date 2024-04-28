@@ -14,10 +14,10 @@ export class GenericService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getAllCharacters(id: number): Promise<any> {
+  async getAllCharacters(pageNumber: number): Promise<any> {
     const requestConfig: AxiosRequestConfig = {};
     return this.httpService
-      .get(`${this.url}characters/${id}`, requestConfig)
+      .get(`${this.url}?page=${pageNumber}`, requestConfig)
       .pipe(map((response) => response.data));
   }
 }
